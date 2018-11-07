@@ -3,7 +3,9 @@ from setuptools import setup, find_packages
 
 
 install_requires = [
-    "gensim"
+    "gensim",
+    "bottle",
+    "click"
 ]
 
 setup(
