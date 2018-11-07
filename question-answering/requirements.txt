@@ -2,3 +2,4 @@ gensim
 bottle
 click
 paste
+numpy

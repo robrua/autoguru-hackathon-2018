@@ -6,7 +6,8 @@ install_requires = [
     "gensim",
     "bottle",
     "click",
-    "paste"
+    "paste",
+    "numpy"
 ]
 
 setup(
