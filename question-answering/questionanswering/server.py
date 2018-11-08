@@ -41,7 +41,7 @@ def _initialize_services(application: bottle.Bottle, answer_database: AnswerData
         return Answer(
             content=fake.text(),
             question=question,
-            confidence=random.uniform(0.0, 500.0)
+            confidence=random.uniform(0.0, 1.0)
         ).to_serializable()
 
     @application.post("/autoguru/answer")
@@ -60,7 +60,7 @@ def _initialize_services(application: bottle.Bottle, answer_database: AnswerData
         return Answer(
             content=fake.text(),
             question=question,
-            confidence=random.uniform(0.0, 500.0)
+            confidence=random.uniform(0.0, 1.0)
         ).to_serializable()
 
 
