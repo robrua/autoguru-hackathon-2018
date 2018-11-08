@@ -23,6 +23,18 @@ def ask_for_wisdom(question: str = ""):
     return answer
 
 
+def ask_question(question: str = ""):
+    url = "http://localhost:41170/autoguru/answer"
+    data = {"question": question}
+    headers = {"Content-Type": "application/json"}
+
+    data = json.dumps(data)
+    req = requests.post(url=url, data=data, headers=headers, stream=True)
+    response = req.content.decode()
+    answer = json.loads(response)['content']
+    return answer
+
+
 @client.event
 async def on_message(message):
     # we do not want the bot to reply to itself
@@ -34,7 +46,7 @@ async def on_message(message):
             answer = ask_for_wisdom()
         else:
             question = message.content
-            answer = ask_for_wisdom(question)
+            answer = ask_question(question)
         await client.send_message(message.channel, answer)
 
 
