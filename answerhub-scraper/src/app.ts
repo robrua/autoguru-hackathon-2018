@@ -1,4 +1,4 @@
-import AnswerHub from "./AnswerHub";
+import AnswerHub, {Question} from "./AnswerHub";
 import fs = require("fs");
 
 const LAST_QUESTION_PAGE_FILE = `${__dirname}/../data/last_question_page.txt`;
@@ -44,15 +44,17 @@ const downloadComments = async () => {
 const downloadQuestionPage = async (page: number) => {
 	console.log("Downloading question page " + page);
 	const questionList = await answerHub.getQuestions(page, "newest");
-	for (const question of questionList.list) {
+	for (const questionSummary of questionList.list) {
 		try {
-			console.log(`Downloading question ${question.id}...`);
+			console.log(`Downloading question ${questionSummary.id}...`);
+			const question: Question = await answerHub.getQuestion(questionSummary.id);
 			const contents = {
-				id: question.id,
+				id: questionSummary.id,
+				title: question.title,
 				body: answerHub.formatQuestionBody(question.body),
 				answers: [] as any[]
 			};
-			for (const answerId of question.answers) {
+			for (const answerId of questionSummary.answers) {
 				const answer = await answerHub.getAnswer(answerId);
 				contents.answers.push({
 					id: answer.id,
@@ -60,9 +62,9 @@ const downloadQuestionPage = async (page: number) => {
 					accepted: answer.marked
 				});
 			}
-			fs.writeFileSync(`${__dirname}/../data/questions/${question.id}.json`, JSON.stringify(contents));
+			fs.writeFileSync(`${__dirname}/../data/questions/${questionSummary.id}.json`, JSON.stringify(contents));
 		} catch (ex) {
-			console.error(`An error occurred while downloading question ${question.id}: ${ex}`);
+			console.error(`An error occurred while downloading question ${questionSummary.id}: ${ex}`);
 		}
 	}
 };
