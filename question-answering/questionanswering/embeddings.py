@@ -9,7 +9,7 @@ import click
 
 
 _DEFAULT_DATASET = "text8"
-_DEFAULT_MODEL = "model.npz"
+_DEFAULT_MODEL = "embedder.npz"
 _DEFAULT_DATA_OUT = "dataset.txt"
 _DEFAULT_DATA_IN = "data.txt"
 _DEFAULT_ENCODING = "UTF-8"
