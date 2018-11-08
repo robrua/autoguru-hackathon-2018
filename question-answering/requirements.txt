@@ -3,3 +3,5 @@ bottle
 click
 paste
 numpy
+scipy
+Faker

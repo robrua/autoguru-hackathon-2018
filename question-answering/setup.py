@@ -7,7 +7,9 @@ install_requires = [
     "bottle",
     "click",
     "paste",
-    "numpy"
+    "numpy",
+    "scipy",
+    "Faker"
 ]
 
 setup(
