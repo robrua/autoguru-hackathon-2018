@@ -6,7 +6,8 @@ import scipy
 from .embeddings import Embedder
 
 
-_STRING_DTYPE = numpy.dtype("unicode")
+_MAX_ANSWER_LENGTH = 500
+_STRING_DTYPE = "<U{}".format(_MAX_ANSWER_LENGTH)
 _VECTOR_DTYPE = numpy.dtype("float32")
 _DEFAULT_LEAF_SIZE = 16
 
@@ -31,23 +32,34 @@ class AnswerDatabase(object):
             raise ValueError("Must provide embedding_size if answers/answer_vectors is not provided!")
 
         self._embedder = embedder
-        self._answers = answers if answers is not None else numpy.ndarray(shape=(0,1), dtype=_STRING_DTYPE)
+        self._answers = answers if answers is not None else numpy.ndarray(shape=(0, 1), dtype=_STRING_DTYPE)
         self._answer_vectors = answer_vectors if answer_vectors is not None else numpy.ndarray(shape=(0, embedding_size), dtype=_VECTOR_DTYPE)
         self._leaf_size = leaf_size
-        self._embedding_size = embedding_size
         if self._answer_vectors.shape[0] > 0:
             self._tree = scipy.spatial.cKDTree(self._answer_vectors, leafsize=self._leaf_size)
 
     def add_answer(self, answer: str) -> None:
-        self._answers = numpy.append(self._answers, answer)
-        self._answer_vectors = numpy.append(self._answer_vectors, self._embedder.embed(answer))
+        answers_array = numpy.ndarray(shape=(1, 1), dtype=self._answers.dtype)
+        answer_vectors = numpy.ndarray(shape=(1, self._answer_vectors.shape[1]), dtype=self._answer_vectors.dtype)
+
+        answers_array[0] = answer
+        answer_vectors[0] = self._embedder.embed(answer)
+
+        self._answers = numpy.append(self._answers, answers_array)
+        self._answer_vectors = numpy.append(self._answer_vectors, answer_vectors)
         if self._answer_vectors.shape[0] > 0:
             self._tree = scipy.spatial.cKDTree(self._answer_vectors, leafsize=self._leaf_size)
 
     def add_answers(self, answers: Iterable[str]) -> None:
-        answers = numpy.asarray(answers, dtype=_STRING_DTYPE).reshape((len(answers),1))
-        self._answers = numpy.append(self._answers, answers)
-        self._answer_vectors = numpy.append(self._answer_vectors, numpy.asarray([self._embedder.embed(answer) for answer in answers], dtype=_STRING_DTYPE).reshape((len(answers),self._embedding_size)))
+        answers_array = numpy.ndarray(shape=(len(answers), 1), dtype=self._answers.dtype)
+        answer_vectors = numpy.ndarray(shape=(len(answers), self._answer_vectors.shape[1]), dtype=self._answer_vectors.dtype)
+
+        for i, answer in enumerate(answers):
+            answers_array[i] = answer
+            answer_vectors[i] = self._embedder.embed(answer)
+
+        self._answers = numpy.append(self._answers, answers_array, axis=0)
+        self._answer_vectors = numpy.append(self._answer_vectors, answer_vectors, axis=0)
         if self._answer_vectors.shape[0] > 0:
             self._tree = scipy.spatial.cKDTree(self._answer_vectors, leafsize=self._leaf_size)
 
@@ -58,17 +70,16 @@ class AnswerDatabase(object):
 
     @classmethod
     def load(cls, answers_path: str, embedder_path: str) -> "AnswerDatabase":
-        # with open(answers_path, "rb") as in_file:
-        #     answers_dict = numpy.load(in_file)
-        #     answers = answers_dict["answers"]
-        #     answer_vectors = answers_dict["answer_vectors"]
-        #     print(answer_vectors.shape)
+        with open(answers_path, "rb") as in_file:
+            answers_dict = numpy.load(in_file)
+            answers = answers_dict["answers"]
+            answer_vectors = answers_dict["answer_vectors"]
         embedder = Embedder.load(embedder_path)
         return AnswerDatabase(
             embedder=embedder,
-            embedding_size=25
-            # answers=answers,
-            # answer_vectors=answer_vectors
+            embedding_size=300,
+            answers=answers,
+            answer_vectors=answer_vectors
         )
 
     @staticmethod
@@ -81,10 +92,11 @@ class AnswerDatabase(object):
             self._tree
         except AttributeError:
             raise ValueError("Must add answers first!")
+
         question_vector = self._embedder.embed(question)
         distance, index = self._tree.query(question_vector, k=1)
 
-        content = self._answers[index]
+        content = self._answers[index][0]
         confidence = AnswerDatabase._get_confidence(distance)
 
         return Answer(
