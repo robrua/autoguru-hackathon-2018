@@ -31,35 +31,44 @@ class AnswerDatabase(object):
             raise ValueError("Must provide embedding_size if answers/answer_vectors is not provided!")
 
         self._embedder = embedder
-        self._answers = answers if answers is not None else numpy.ndarray(shape=(0,), dtype=_STRING_DTYPE)
+        self._answers = answers if answers is not None else numpy.ndarray(shape=(0,1), dtype=_STRING_DTYPE)
         self._answer_vectors = answer_vectors if answer_vectors is not None else numpy.ndarray(shape=(0, embedding_size), dtype=_VECTOR_DTYPE)
         self._leaf_size = leaf_size
-        self._tree = scipy.spatial.cKDTree(self._answer_vectors, leafsize=self._leaf_size)
+        self._embedding_size = embedding_size
+        if self._answer_vectors.shape[0] > 0:
+            self._tree = scipy.spatial.cKDTree(self._answer_vectors, leafsize=self._leaf_size)
 
     def add_answer(self, answer: str) -> None:
-        numpy.append(self._answers, answer)
-        numpy.append(self._answer_vectors, self.embedder.embed(answer))
-        self._tree = scipy.spatial.cKDTree(self._answer_vectors, leafsize=self._leaf_size)
+        self._answers = numpy.append(self._answers, answer)
+        self._answer_vectors = numpy.append(self._answer_vectors, self._embedder.embed(answer))
+        if self._answer_vectors.shape[0] > 0:
+            self._tree = scipy.spatial.cKDTree(self._answer_vectors, leafsize=self._leaf_size)
 
     def add_answers(self, answers: Iterable[str]) -> None:
-        numpy.append(self._answers, answers)
-        numpy.append(self._answer_vectors, [self.embedder.embed(answer) for answer in answers])
-        self._tree = scipy.spatial.cKDTree(self._answer_vectors, leafsize=self._leaf_size)
+        answers = numpy.asarray(answers, dtype=_STRING_DTYPE).reshape((len(answers),1))
+        self._answers = numpy.append(self._answers, answers)
+        self._answer_vectors = numpy.append(self._answer_vectors, numpy.asarray([self._embedder.embed(answer) for answer in answers], dtype=_STRING_DTYPE).reshape((len(answers),self._embedding_size)))
+        if self._answer_vectors.shape[0] > 0:
+            self._tree = scipy.spatial.cKDTree(self._answer_vectors, leafsize=self._leaf_size)
 
     def save(self, answers_path: str, embedder_path: str) -> None:
         with open(answers_path, "wb") as out_file:
-            numpy.savez(out_file, self._answers, self._answer_vectors)
+            numpy.savez(out_file, answers=self._answers, answer_vectors=self._answer_vectors)
         self._embedder.save(embedder_path)
 
     @classmethod
     def load(cls, answers_path: str, embedder_path: str) -> "AnswerDatabase":
-        with open(answers_path, "rb") as in_file:
-            answers, answer_vectors = numpy.load(in_file)
-        embedder = Embedder.load()
+        # with open(answers_path, "rb") as in_file:
+        #     answers_dict = numpy.load(in_file)
+        #     answers = answers_dict["answers"]
+        #     answer_vectors = answers_dict["answer_vectors"]
+        #     print(answer_vectors.shape)
+        embedder = Embedder.load(embedder_path)
         return AnswerDatabase(
             embedder=embedder,
-            answers=answers,
-            answer_vectors=answer_vectors
+            embedding_size=25
+            # answers=answers,
+            # answer_vectors=answer_vectors
         )
 
     @staticmethod
@@ -68,6 +77,10 @@ class AnswerDatabase(object):
         return distance
 
     def get_answer(self, question: str) -> Answer:
+        try:
+            self._tree
+        except AttributeError:
+            raise ValueError("Must add answers first!")
         question_vector = self._embedder.embed(question)
         distance, index = self._tree.query(question_vector, k=1)
 
