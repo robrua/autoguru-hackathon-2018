@@ -48,20 +48,15 @@ def _initialize_services(application: bottle.Bottle, answer_database: AnswerData
     def _answer() -> Dict[str, Any]:
         try:
             query = json.load(bottle.request.body)
-        except json.decoder.JSONDecodeError:
-            return bottle.HTTPError(status=500, body="Failed to decode JSON POST data!")
+        except json.decoder.JSONDecodeError as e:
+            return bottle.HTTPError(status=500, body="Failed to decode JSON POST data!", exception=e)
 
         try:
             question = query["question"]
         except KeyError:
             return bottle.HTTPError(status=400, body="POST request included no \"question\" field!")
 
-        fake = Faker()
-        return Answer(
-            content=fake.text(),
-            question=question,
-            confidence=random.uniform(0.0, 1.0)
-        ).to_serializable()
+        return answer_database.get_answer(question).to_serializable()
 
 
 @click.command(name="run", help="Run the AutoGuru Question Answering REST services")
@@ -77,7 +72,7 @@ def _run(host: str = _DEFAULT_HOST,
          embedder: str = _DEFAULT_EMBEDDER,
          answers: str = _DEFAULT_ANSWERS,
          debug: bool = _DEFAULT_DEBUG) -> None:
-    answer_database = None  # TODO: AnswerDatabase.load(answers, embedder)
+    answer_database = AnswerDatabase.load(answers, embedder)
 
     application = bottle.Bottle()
     _initialize_services(application, answer_database)

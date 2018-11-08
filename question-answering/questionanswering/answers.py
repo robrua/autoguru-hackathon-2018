@@ -52,7 +52,7 @@ class AnswerDatabase(object):
         self._embedder.save(embedder_path)
 
     @classmethod
-    def load(answers_path: str, embedder_path: str) -> "AnswerDatabase":
+    def load(cls, answers_path: str, embedder_path: str) -> "AnswerDatabase":
         with open(answers_path, "rb") as in_file:
             answers, answer_vectors = numpy.load(in_file)
         embedder = Embedder.load()
