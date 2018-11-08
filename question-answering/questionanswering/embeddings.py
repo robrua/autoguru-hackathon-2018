@@ -1,6 +1,6 @@
 from typing import List
 
-from gensim.parsing.preprocessing import preprocess_string, strip_tags, strip_punctuation, strip_multiple_whitespaces, remove_stopwords, stem_text
+from gensim.parsing.preprocessing import preprocess_string, strip_tags, strip_punctuation, strip_multiple_whitespaces, remove_stopwords
 from gensim.models.word2vec import Word2Vec
 from gensim.models import KeyedVectors
 import gensim.downloader as api
@@ -25,8 +25,7 @@ _PREPROCESSING_FILTERS = [
     strip_tags,
     strip_punctuation,
     strip_multiple_whitespaces,
-    remove_stopwords,
-    stem_text
+    remove_stopwords
 ]
 
 
