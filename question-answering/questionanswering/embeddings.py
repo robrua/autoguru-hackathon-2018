@@ -11,6 +11,7 @@ import click
 _DEFAULT_DATASET = "text8"
 _DEFAULT_MODEL = "model.npz"
 _DEFAULT_DATA_OUT = "dataset.txt"
+_DEFAULT_DATA_IN = "data.txt"
 _DEFAULT_ENCODING = "UTF-8"
 _DEFAULT_EMBEDDING_SIZE = 300
 _DEFAULT_GRAM_SIZE = 5
@@ -109,8 +110,19 @@ def _train(data: str, model: str = _DEFAULT_MODEL) -> None:
 def _download(name: str = _DEFAULT_DATASET, out: str = _DEFAULT_DATA_OUT, encoding: str = _DEFAULT_ENCODING) -> None:
     dataset = api.load(name)
     with open(out, "w", encoding=encoding) as out_file:
-        for item in dataset:
-            out_file.write("{}\n".format("\t".join(item)))
+        for tokens in dataset:
+            out_file.write("{}\n".format("\t".join(tokens)))
+
+
+@_main.command("append", help="Append data to a word embedding dataset")
+@click.option("--data", "-d", default=_DEFAULT_DATA_IN, help="The data to add to the dataset, with one message per line", show_default=True)
+@click.option("--dataset", "-s", default=_DEFAULT_DATA_OUT, help="The dataset to add the data to", show_default=True)
+@click.option("--encoding", "-e", default=_DEFAULT_ENCODING, help="The text encoding to use when writing the file", show_default=True)
+def _append(data: str = _DEFAULT_DATA_IN, dataset: str = _DEFAULT_DATA_OUT, encoding: str = _DEFAULT_ENCODING) -> None:
+    with open(data, "r", encoding=encoding) as in_file, open(dataset, "a", encoding=encoding) as out_file:
+        for line in in_file:
+            tokens = preprocess_string(line, _PREPROCESSING_FILTERS)
+            out_file.write("{}\n".format("\t".join(tokens)))
 
 
 if __name__ == "__main__":
