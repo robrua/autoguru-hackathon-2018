@@ -1,0 +1,21 @@
+{
+	"name": "answerhub-scraper",
+	"scripts": {
+		"compile": "tslint -p . && tsc -p .",
+		"start": "tsc -p . && node ./dist/app.js"
+	},
+	"author": "AutoGuru team",
+	"license": "MIT",
+	"dependencies": {
+		"html2plaintext": "^2.1.0",
+		"node-fetch": "^1.7.2",
+		"turndown": "^4.0.2",
+		"turndown-plugin-gfm": "^1.0.2"
+	},
+	"devDependencies": {
+		"@types/node": "^8.0.22",
+		"@types/node-fetch": "^1.6.7",
+		"typescript": "^2.4.2",
+		"tslint": "^5.10.0"
+	}
+}
