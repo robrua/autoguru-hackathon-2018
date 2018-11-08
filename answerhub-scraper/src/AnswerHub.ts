@@ -135,8 +135,7 @@ export interface Article extends Node {}
 
 export interface NodeList<T extends Node> {
 	list: T[];
-}
-
-export interface QuestionList extends NodeList<Question> {
 	pageCount: number;
 }
+
+export interface QuestionList extends NodeList<Question> {}

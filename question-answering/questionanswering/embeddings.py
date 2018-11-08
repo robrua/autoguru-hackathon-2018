@@ -1,6 +1,6 @@
 from typing import List
 
-from gensim.parsing.preprocessing import preprocess_string, strip_tags, strip_punctuation, strip_multiple_whitespaces, remove_stopwords, stem_text
+from gensim.parsing.preprocessing import preprocess_string, strip_tags, strip_punctuation, strip_multiple_whitespaces, remove_stopwords
 from gensim.models.word2vec import Word2Vec
 from gensim.models import KeyedVectors
 import gensim.downloader as api
@@ -9,7 +9,7 @@ import click
 
 
 _DEFAULT_DATASET = "text8"
-_DEFAULT_MODEL = "model.npz"
+_DEFAULT_MODEL = "embedder.npz"
 _DEFAULT_DATA_OUT = "dataset.txt"
 _DEFAULT_DATA_IN = "data.txt"
 _DEFAULT_ENCODING = "UTF-8"
@@ -25,8 +25,7 @@ _PREPROCESSING_FILTERS = [
     strip_tags,
     strip_punctuation,
     strip_multiple_whitespaces,
-    remove_stopwords,
-    stem_text
+    remove_stopwords
 ]
 
 

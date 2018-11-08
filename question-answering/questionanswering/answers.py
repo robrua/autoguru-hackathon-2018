@@ -2,6 +2,7 @@ from typing import Iterable
 
 import numpy as np
 import scipy
+import click
 
 from .embeddings import Embedder
 
@@ -10,6 +11,10 @@ _MAX_ANSWER_LENGTH = 500
 _STRING_DTYPE = "<U{}".format(_MAX_ANSWER_LENGTH)
 _VECTOR_DTYPE = np.dtype("float32")
 _DEFAULT_LEAF_SIZE = 16
+_DEFAULT_ANSWERS = "answers.txt"
+_DEFAULT_DATABASE = "answers.npz"
+_DEFAULT_EMBEDDER = "embedder.npz"
+_DEFAULT_ENCODING = "UTF-8"
 
 
 class Answer(object):
@@ -108,3 +113,38 @@ class AnswerDatabase(object):
             question=question,
             confidence=confidence
         )
+
+
+@click.group(help="Create an answer database or answer a question")
+def _main() -> None:
+    pass
+
+
+@_main.command(name="create", help="Create an answer database")
+@click.option("--answers", "-a", default=_DEFAULT_ANSWERS, help="The file of answers to create a DB of, one answer per line", show_default=True)
+@click.option("--database", "-d", default=_DEFAULT_DATABASE, help="The path to create the DB file at", show_default=True)
+@click.option("--embedder", "-e", default=_DEFAULT_EMBEDDER, help="The embedder model file path", show_default=True)
+@click.option("--encoding", "-e", default=_DEFAULT_ENCODING, help="The text encoding to use when writing the file", show_default=True)
+def _create(answers: str = _DEFAULT_ANSWERS, database: str = _DEFAULT_DATABASE, embedder: str = _DEFAULT_EMBEDDER, encoding: str = _DEFAULT_ENCODING) -> None:
+    embed = Embedder.load(embedder)
+
+    with open(answers, "r", encoding=encoding) as in_file:
+        answers = list(in_file)
+
+    example = embed.embed(answers[0])
+    answer_db = AnswerDatabase(embedder=embed, embedding_size=example.shape[0])
+    answer_db.add_answers(answers)
+    answer_db.save(database, embedder)
+
+
+@_main.command(name="answer", help="Answer a question")
+@click.option("--question", "-q", required=True, type=str, help="The question to answer")
+@click.option("--database", "-d", default=_DEFAULT_DATABASE, help="The path to the answer DB file", show_default=True)
+@click.option("--embedder", "-e", default=_DEFAULT_EMBEDDER, help="The embedder model file path", show_default=True)
+def _answer(question: str, database: str = _DEFAULT_DATABASE, embedder: str = _DEFAULT_EMBEDDER) -> None:
+    answer_db = AnswerDatabase.load(database, embedder)
+    print(answer_db.get_answer(question).content.strip())
+
+
+if __name__ == "__main__":
+    _main()
