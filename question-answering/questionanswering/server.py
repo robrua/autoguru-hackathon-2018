@@ -14,7 +14,7 @@ _DEFAULT_PORT = 41170
 _DEFAULT_SERVER = "paste"
 _DEFAULT_DEBUG = False
 _DEFAULT_DATABASE = "answers.json"
-_DEFAULT_VECTORS = "answer_vectors.npz"
+_DEFAULT_VECTORS = "answer-vectors.npz"
 _DEFAULT_EMBEDDER = "embedder.npz"
 
 
