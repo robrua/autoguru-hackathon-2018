@@ -100,7 +100,6 @@
   "summoner": "You can retrieve information about summoners from the summoner-v3 API https://developer.riotgames.com/api-methods/#summoner-v3",
   "How can I find out what level my account is?": "You can retrieve information about summoners from the summoner-v3 API https://developer.riotgames.com/api-methods/#summoner-v3",
   "How do I get the ID for a summoner from their name?": "You can retrieve information about summoners from the summoner-v3 API https://developer.riotgames.com/api-methods/#summoner-v3",
-  "How do I get the account id I need to get matches from the match list api?": "You can retrieve information about summoners from the summoner-v3 API https://developer.riotgames.com/api-methods/#summoner-v3",
   "How do I get the stats for a player if I have their summoner name": "You can retrieve information about summoners from the summoner-v3 API https://developer.riotgames.com/api-methods/#summoner-v3",
 
 	"professional": "The official API does not have any endpoints for esports. There is an API used by lolesports.com, but it is not officially supported and may change at any time without warning. There is some unofficial documentation here, but it might not be accurate or up-to-date https://gist.github.com/levi/e7e5e808ac0119e154ce",
