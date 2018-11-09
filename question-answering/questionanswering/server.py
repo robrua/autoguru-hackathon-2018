@@ -28,7 +28,7 @@ _TOTAL_USERS_KEY = "total_users"
 _UNANSWERED_QUESTIONS_KEY = "unanswered_questions"
 
 
-def _initialize_services(application: bottle.Bottle, storage: Storage) -> None:
+def _initialize_services(application: bottle.Bottle, answer_database: AnswerDatabase, storage: Storage) -> None:
     @application.hook("after_request")
     def _enable_cors() -> None:
         bottle.response.headers["Access-Control-Allow-Origin"] = "*"
@@ -110,11 +110,11 @@ def _run(host: str = _DEFAULT_HOST,
          answers: str = _DEFAULT_DATABASE,
          vectors: str = _DEFAULT_VECTORS,
          debug: bool = _DEFAULT_DEBUG) -> None:
-    # answer_database = AnswerDatabase.load(answers_path=answers, vectors_path=vectors, embedder_path=embedder)
+    answer_database = AnswerDatabase.load(answers_path=answers, vectors_path=vectors, embedder_path=embedder)
     storage = Storage(filepath=_DEFAULT_STORAGE)
 
     application = bottle.Bottle()
-    _initialize_services(application, storage)
+    _initialize_services(application, answer_database, storage)
 
     application.run(host=host, port=port, server=server, debug=debug)
 
