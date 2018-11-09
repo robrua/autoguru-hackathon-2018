@@ -97,7 +97,6 @@
 	"active game": "The spectator-v3 API provides information about live games. However, the data it provides is fairly limited, and does not include any realtime data. https://developer.riotgames.com/api-methods/#spectator-v3",
 	"How can I retrieve data for a player who is currently ingame?": "The spectator-v3 API provides information about live games. However, the data it provides is fairly limited, and does not include any realtime data. https://developer.riotgames.com/api-methods/#spectator-v3",
 
-  "summoner": "You can retrieve information about summoners from the summoner-v3 API https://developer.riotgames.com/api-methods/#summoner-v3",
   "How can I find out what level my account is?": "You can retrieve information about summoners from the summoner-v3 API https://developer.riotgames.com/api-methods/#summoner-v3",
   "How do I get the ID for a summoner from their name?": "You can retrieve information about summoners from the summoner-v3 API https://developer.riotgames.com/api-methods/#summoner-v3",
   "How do I get the stats for a player if I have their summoner name": "You can retrieve information about summoners from the summoner-v3 API https://developer.riotgames.com/api-methods/#summoner-v3",
