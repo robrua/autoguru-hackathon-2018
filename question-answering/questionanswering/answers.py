@@ -104,7 +104,9 @@ class AnswerDatabase(object):
         question_vector = self._embedder.embed(question)
         distance, index = self._tree.query(question_vector, k=1)
 
-        content = self._question_answer_pairs[index][1]
+        matching_question, content = self._question_answer_pairs[index]
+        content += f"\n (Matching question is: \"{matching_question}\".)"
+
         confidence = self._get_confidence(distance)
 
         return Answer(
