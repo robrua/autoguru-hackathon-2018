@@ -3,6 +3,7 @@ from typing import List
 from gensim.parsing.preprocessing import preprocess_string, strip_tags, strip_punctuation, strip_multiple_whitespaces, remove_stopwords
 from gensim.models.word2vec import Word2Vec
 from gensim.models import KeyedVectors
+from sklearn.preprocessing import normalize
 import gensim.downloader as api
 import numpy
 import click
@@ -35,7 +36,8 @@ class Embedder(object):
 
     @staticmethod
     def _combine(vectors: List[numpy.ndarray]) -> numpy.ndarray:
-        return numpy.average(vectors, axis=0)
+        mean = numpy.average(vectors, axis=0)
+        return normalize(mean.reshape((1, mean.shape[0]))).reshape(mean.shape)
 
     @classmethod
     def train(cls,
