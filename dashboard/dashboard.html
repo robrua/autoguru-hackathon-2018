@@ -242,6 +242,9 @@
                         </div>
                     </div>
                 </div>
+                <div class="stats">
+                    <i class="ti-reload"></i> Updated at <span id="update_date"></span>
+                </div>
                 <!-- <div class="row">
 
                     <div class="col-md-12">
@@ -320,25 +323,6 @@
 
         <footer class="footer">
             <div class="container-fluid">
-                <nav class="pull-left">
-                    <ul>
-                        <li>
-                            <a href="#">
-                                Link 1
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                               Link 2
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                Link 3
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
                 <div class="copyright pull-right">
                     by Team Auto Guru at Riot Games Hackathon 2018
                 </div>
@@ -387,6 +371,18 @@
                 timer: 4000
             });
 
+            setInterval(() => {
+                $.ajax({
+                    url: "http://0.0.0.0:41170/autoguru/dashboard"
+                }).then(function(data) {
+                    $('#total_questions').text(data.total_questions);
+                    $('#answered_questions').text(data.total_answered_questions);
+                    $('#unanswered_questions').text(data.total_unanswered_questions);
+                    $('#total_users').text(data.total_users);
+                    $('#update_date').text(new Date().toLocaleTimeString())
+                });
+            }, 10000);
+
             $.ajax({
                 url: "http://0.0.0.0:41170/autoguru/dashboard"
             }).then(function(data) {
@@ -394,6 +390,7 @@
                 $('#answered_questions').text(data.total_answered_questions);
                 $('#unanswered_questions').text(data.total_unanswered_questions);
                 $('#total_users').text(data.total_users);
+                $('#update_date').text(new Date().toLocaleTimeString())
 
                 $('.Count').each(function () {
                     var $this = $(this);
