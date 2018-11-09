@@ -47,7 +47,9 @@ async def on_message(message):
         else:
             question = message.content
             answer = ask_question(question)
-        await client.send_message(message.channel, answer)
+        sent_message = await client.send_message(message.channel, answer)
+        await client.add_reaction(sent_message, "👍")
+        await client.add_reaction(sent_message, "👎")
 
 
 @client.event
