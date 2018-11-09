@@ -2,11 +2,14 @@ import os
 import discord
 import requests
 import json
+import random
 
 
 TOKEN = os.environ['BOTTOKEN']
 
 MESSAGE_TOKEN = "? "
+I_DUNNO_ANSWER = "I don't have an answer in my database that sufficiently answers your question."
+MEME_CHANCE = 0.2
 
 client = discord.Client()
 
@@ -50,9 +53,12 @@ async def on_message(message):
         else:
             question = message.content
             answer = ask_question(question)
+            if answer.startswith(I_DUNNO_ANSWER) and random.random() < MEME_CHANCE:
+                answer += "\n\nhttps://i.imgur.com/zKeatPl.png"
         sent_message = await client.send_message(message.channel, answer)
-        await client.add_reaction(sent_message, "👍")
-        await client.add_reaction(sent_message, "👎")
+        if not answer.startswith(I_DUNNO_ANSWER):
+            await client.add_reaction(sent_message, "👍")
+            await client.add_reaction(sent_message, "👎")
 
 
 @client.event
