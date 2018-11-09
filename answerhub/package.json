@@ -2,7 +2,8 @@
 	"name": "answerhub-scraper",
 	"scripts": {
 		"compile": "tslint -p . && tsc -p .",
-		"start": "tsc -p . && node ./dist/app.js"
+		"scraper": "tsc -p . && node ./dist/scraper.js",
+		"answerer": "tsc -p . && node ./dist/answerer.js"
 	},
 	"author": "AutoGuru team",
 	"license": "MIT",

@@ -1,4 +1,4 @@
-import AnswerHub from "./AnswerHub";
+import AnswerHub, {Question} from "./AnswerHub";
 import fs = require("fs");
 
 const LAST_QUESTION_PAGE_FILE = `${__dirname}/../data/last_question_page.txt`;
@@ -49,6 +49,7 @@ const downloadQuestionPage = async (page: number) => {
 			console.log(`Downloading question ${question.id}...`);
 			const contents = {
 				id: question.id,
+				title: question.title,
 				body: answerHub.formatQuestionBody(question.body),
 				answers: [] as any[]
 			};

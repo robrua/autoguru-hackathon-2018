@@ -13,8 +13,9 @@ _DEFAULT_HOST = "0.0.0.0"
 _DEFAULT_PORT = 41170
 _DEFAULT_SERVER = "paste"
 _DEFAULT_DEBUG = False
+_DEFAULT_DATABASE = "answers.json"
+_DEFAULT_VECTORS = "answer_vectors.npz"
 _DEFAULT_EMBEDDER = "embedder.npz"
-_DEFAULT_ANSWERS = "answers.npz"
 
 
 def _initialize_services(application: bottle.Bottle, answer_database: AnswerDatabase) -> None:
@@ -64,15 +65,17 @@ def _initialize_services(application: bottle.Bottle, answer_database: AnswerData
 @click.option("--port", "-p", default=_DEFAULT_PORT, help="The port to bind the server on", show_default=True)
 @click.option("--server", "-s", default=_DEFAULT_SERVER, help="The WSGI web server to run on", show_default=True)
 @click.option("--embedder", "-e", default=_DEFAULT_EMBEDDER, help="The path to the word embedder model", show_default=True)
-@click.option("--answers", "-a", default=_DEFAULT_ANSWERS, help="The path to the answer corpus", show_default=True)
+@click.option("--answers", "-a", default=_DEFAULT_DATABASE, help="The path to the answer corpus", show_default=True)
+@click.option("--vectors", "-v", default=_DEFAULT_VECTORS, help="The path to the vectors for the answer corpus", show_default=True)
 @click.option("--debug/--live", "-d/-l", default=_DEFAULT_DEBUG, help="Whether to include debug logs in the server output", show_default=True)
 def _run(host: str = _DEFAULT_HOST,
          port: int = _DEFAULT_PORT,
          server: str = _DEFAULT_SERVER,
          embedder: str = _DEFAULT_EMBEDDER,
-         answers: str = _DEFAULT_ANSWERS,
+         answers: str = _DEFAULT_DATABASE,
+         vectors: str = _DEFAULT_VECTORS,
          debug: bool = _DEFAULT_DEBUG) -> None:
-    answer_database = AnswerDatabase.load(answers_path=answers, embedder_path=embedder)
+    answer_database = AnswerDatabase.load(answers_path=answers, vectors_path=vectors, embedder_path=embedder)
 
     application = bottle.Bottle()
     _initialize_services(application, answer_database)
