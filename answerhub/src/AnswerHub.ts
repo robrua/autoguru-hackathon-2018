@@ -31,8 +31,7 @@ export default class AnswerHubAPI {
 			return fullMatch;
 		});
 
-		const clamped = markdown.substr(0, Math.min(1021, markdown.length));
-		return clamped + (clamped.length === 1021 ? "..." : "");
+		return markdown;
 	}
 
 	public getQuestions(page = 1, sort = "active"): Promise<QuestionList> {
@@ -72,6 +71,10 @@ export default class AnswerHubAPI {
 		return this.makeRequest(`article/${id}.json`);
 	}
 
+	public answerQuestion(questionId: number, answer: string): Promise<any> {
+		return this.makeRequest(`question/${questionId}/answer.json`, JSON.stringify({body: answer}));
+	}
+
 	/**
 	 * Makes a request to the AnswerHub AnswerHubAPI
 	 * @param url The url to make a request to, relative to the base AnswerHubAPI url
@@ -79,17 +82,18 @@ export default class AnswerHubAPI {
 	 * @throws {any} Thrown if an error is received from the AnswerHubAPI
 	 * @returns The parsed body of the response from the AnswerHubAPI
 	 */
-	private async makeRequest<T>(url: string): Promise<T> {
+	private async makeRequest<T>(url: string, body?: string): Promise<T> {
 		const resp = await fetch(`${this.baseURL}services/v2/${url}`, {
-			method: "POST",
+			method: body ? "POST" : "GET",
 			headers: {
 				Accept: "application/json",
 				"Content-Type": "application/json",
 				Authorization: this.auth
-			}
+			},
+			body: body
 		});
 
-		if (resp.status !== 200) {
+		if (!(resp.status >= 200 && resp.status < 300)) {
 			throw new Error(`Received status code ${resp.status}`);
 		}
 

@@ -44,17 +44,16 @@ const downloadComments = async () => {
 const downloadQuestionPage = async (page: number) => {
 	console.log("Downloading question page " + page);
 	const questionList = await answerHub.getQuestions(page, "newest");
-	for (const questionSummary of questionList.list) {
+	for (const question of questionList.list) {
 		try {
-			console.log(`Downloading question ${questionSummary.id}...`);
-			const question: Question = await answerHub.getQuestion(questionSummary.id);
+			console.log(`Downloading question ${question.id}...`);
 			const contents = {
-				id: questionSummary.id,
+				id: question.id,
 				title: question.title,
 				body: answerHub.formatQuestionBody(question.body),
 				answers: [] as any[]
 			};
-			for (const answerId of questionSummary.answers) {
+			for (const answerId of question.answers) {
 				const answer = await answerHub.getAnswer(answerId);
 				contents.answers.push({
 					id: answer.id,
@@ -62,9 +61,9 @@ const downloadQuestionPage = async (page: number) => {
 					accepted: answer.marked
 				});
 			}
-			fs.writeFileSync(`${__dirname}/../data/questions/${questionSummary.id}.json`, JSON.stringify(contents));
+			fs.writeFileSync(`${__dirname}/../data/questions/${question.id}.json`, JSON.stringify(contents));
 		} catch (ex) {
-			console.error(`An error occurred while downloading question ${questionSummary.id}: ${ex}`);
+			console.error(`An error occurred while downloading question ${question.id}: ${ex}`);
 		}
 	}
 };
