@@ -71,13 +71,20 @@ def _initialize_services(application: bottle.Bottle, answer_database: AnswerData
             return bottle.HTTPError(status=400, body="POST request included no \"question\" field!")
 
         storage.increment_key(_TOTAL_QUESTIONS_KEY)
-        answer = answer_database.get_answer(question)
+        try:
+            answer = answer_database.get_answer(question)
 
-        if answer.confidence > _CONFIDENCE_THRESHOLD:
-            storage.increment_key(_TOTAL_ANSWERED_QUESTIONS_KEY)
-        else:
-            answer.content = "I don't have an answer in my database that sufficiently answers your question. We recorded your question and will try to provide a good answer to it in the future. If you provide more keywords or reword your question, I may be able to answer your new question."
-            storage.increment_key(_TOTAL_UNANSWERED_QUESTIONS_KEY)
+            if answer.confidence > _CONFIDENCE_THRESHOLD:
+                storage.increment_key(_TOTAL_ANSWERED_QUESTIONS_KEY)
+            else:
+                answer.content = "I don't have an answer in my database that sufficiently answers your question. We recorded your question and will try to provide a good answer to it in the future. If you provide more keywords or reword your question, I may be able to answer your new question."
+                storage.increment_key(_TOTAL_UNANSWERED_QUESTIONS_KEY)
+        except:
+            answer = Answer(
+                content="I don't have an answer in my database that sufficiently answers your question. We recorded your question and will try to provide a good answer to it in the future. If you provide more keywords or reword your question, I may be able to answer your new question.",
+                confidence=0.0,
+                question=question
+            )
 
         return answer.to_serializable()
 
