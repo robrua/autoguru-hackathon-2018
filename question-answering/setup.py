@@ -9,7 +9,8 @@ install_requires = [
     "paste",
     "numpy",
     "scipy",
-    "Faker"
+    "Faker",
+    "scikit-learn"
 ]
 
 setup(

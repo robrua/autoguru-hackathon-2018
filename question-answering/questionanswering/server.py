@@ -1,4 +1,4 @@
-from typing import Dict, Any, List
+from typing import Dict, Any
 import json
 
 from faker import Faker
@@ -92,7 +92,6 @@ def _initialize_services(application: bottle.Bottle, answer_database: AnswerData
     @application.get("/autoguru/unanswered")
     def _unanswered() -> Any:
         return json.dumps(storage.get(_UNANSWERED_QUESTIONS_KEY))
-
 
 
 @click.command(name="run", help="Run the AutoGuru Question Answering REST services")

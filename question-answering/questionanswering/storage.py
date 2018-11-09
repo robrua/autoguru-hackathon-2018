@@ -2,6 +2,7 @@ from typing import Any
 
 import json
 
+
 class Storage(object):
     def __init__(self, filepath: str) -> None:
         with open(filepath) as in_file:
