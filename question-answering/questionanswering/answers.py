@@ -11,9 +11,9 @@ from .embeddings import Embedder
 _VECTOR_DTYPE = numpy.dtype("float32")
 _DEFAULT_LEAF_SIZE = 16
 _PAIRWISE_DISTANCE_METRIC = "euclidean"
-_DEFAULT_ANSWERS = "question_answers.json"
+_DEFAULT_ANSWERS = "question-answers.json"
 _DEFAULT_DATABASE = "answers.json"
-_DEFAULT_VECTORS = "answer_vectors.npz"
+_DEFAULT_VECTORS = "answer-vectors.npz"
 _DEFAULT_EMBEDDER = "embedder.npz"
 _DEFAULT_ENCODING = "UTF-8"
 
