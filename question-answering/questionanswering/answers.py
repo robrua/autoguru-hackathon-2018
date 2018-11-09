@@ -10,6 +10,7 @@ from .embeddings import Embedder
 
 _VECTOR_DTYPE = numpy.dtype("float32")
 _DEFAULT_LEAF_SIZE = 16
+_PAIRWISE_DISTANCE_METRIC = "euclidean"
 _DEFAULT_ANSWERS = "question_answers.json"
 _DEFAULT_DATABASE = "answers.json"
 _DEFAULT_VECTORS = "answer_vectors.npz"
@@ -41,6 +42,8 @@ class AnswerDatabase(object):
         self._vectors = vectors if vectors is not None else numpy.ndarray(shape=(0, 2, embedding_size), dtype=_VECTOR_DTYPE)
         self._leaf_size = leaf_size
         if self._vectors.shape[0] > 0:
+            distances = scipy.spatial.distance.pdist(self._vectors[:, 0, :], metric=_PAIRWISE_DISTANCE_METRIC)
+            self._max_distance = numpy.asscalar(distances.max())
             self._tree = scipy.spatial.cKDTree(self._vectors[:, 0, :], leafsize=self._leaf_size)
 
     def add_answer(self, question: str, answer: str) -> None:
@@ -51,6 +54,8 @@ class AnswerDatabase(object):
 
         self._vectors = numpy.append(self._vectors, vectors, axis=0)
         if self._vectors.shape[0] > 0:
+            distances = scipy.spatial.distance.pdist(self._vectors[:, 0, :], metric=_PAIRWISE_DISTANCE_METRIC)
+            self._max_distance = numpy.asscalar(distances.max())
             self._tree = scipy.spatial.cKDTree(self._vectors[:, 0, :], leafsize=self._leaf_size)
 
     def add_answers(self, question_answer_pairs: Iterable[Tuple[str, str]]) -> None:
@@ -62,6 +67,8 @@ class AnswerDatabase(object):
 
         self._vectors = numpy.append(self._vectors, vectors, axis=0)
         if self._vectors.shape[0] > 0:
+            distances = scipy.spatial.distance.pdist(self._vectors[:, 0, :], metric=_PAIRWISE_DISTANCE_METRIC)
+            self._max_distance = numpy.asscalar(distances.max())
             self._tree = scipy.spatial.cKDTree(self._vectors[:, 0, :], leafsize=self._leaf_size)
 
     def save(self, answers_path: str = _DEFAULT_DATABASE, vectors_path: str = _DEFAULT_VECTORS, embedder_path: str = _DEFAULT_EMBEDDER, encoding: str = _DEFAULT_ENCODING) -> None:
@@ -85,10 +92,8 @@ class AnswerDatabase(object):
             vectors=vectors
         )
 
-    @staticmethod
-    def _get_confidence(distance: float) -> float:
-        # TODO: Normalize and invert this. Smaller distances should give higher confidences.
-        return distance
+    def _get_confidence(self, distance: float) -> float:
+        return 1.0 - (distance / self._max_distance)
 
     def get_answer(self, question: str) -> Answer:
         try:
@@ -100,7 +105,7 @@ class AnswerDatabase(object):
         distance, index = self._tree.query(question_vector, k=1)
 
         content = self._question_answer_pairs[index][1]
-        confidence = AnswerDatabase._get_confidence(distance)
+        confidence = self._get_confidence(distance)
 
         return Answer(
             content=content,
@@ -139,7 +144,8 @@ def _create(answers: str = _DEFAULT_ANSWERS, database: str = _DEFAULT_DATABASE, 
 @click.option("--embedder", "-e", default=_DEFAULT_EMBEDDER, help="The embedder model file path", show_default=True)
 def _answer(question: str, database: str = _DEFAULT_DATABASE, vectors: str = _DEFAULT_VECTORS, embedder: str = _DEFAULT_EMBEDDER) -> None:
     answer_db = AnswerDatabase.load(database, vectors, embedder)
-    print(answer_db.get_answer(question).content)
+    answer = answer_db.get_answer(question)
+    print("{} - {}".format(answer.content, answer.confidence))
 
 
 if __name__ == "__main__":
