@@ -19,7 +19,7 @@ _DEFAULT_VECTORS = "answer-vectors.npz"
 _DEFAULT_EMBEDDER = "embedder.npz"
 _DEFAULT_STORAGE = "storage.json"
 
-_CONFIDENCE_THRESHOLD = 0
+_CONFIDENCE_THRESHOLD = 0.5
 
 _TOTAL_QUESTIONS_KEY = "total_questions"
 _TOTAL_ANSWERED_QUESTIONS_KEY = "total_answered_questions"
@@ -76,6 +76,7 @@ def _initialize_services(application: bottle.Bottle, answer_database: AnswerData
         if answer.confidence > _CONFIDENCE_THRESHOLD:
             storage.increment_key(_TOTAL_ANSWERED_QUESTIONS_KEY)
         else:
+            answer.content = "I don't have an answer in my database that sufficiently answers your question. We recorded your question and will try to provide a good answer to it in the future. If you provide more keywords or reword your question, I may be able to answer your new question."
             storage.increment_key(_TOTAL_UNANSWERED_QUESTIONS_KEY)
 
         return answer.to_serializable()

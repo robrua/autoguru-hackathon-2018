@@ -13,25 +13,28 @@ client = discord.Client()
 
 def ask_for_wisdom(question: str = ""):
     url = "http://localhost:41170/autoguru/answer-stub"
-    data = {"question": question}
+    data = {"question": question[2:]}
     headers = {"Content-Type": "application/json"}
 
     data = json.dumps(data)
     req = requests.post(url=url, data=data, headers=headers, stream=True)
     response = req.content.decode()
     answer = json.loads(response)['content']
+    confidence = abs(json.loads(response)['confidence'])
     return answer
 
 
 def ask_question(question: str = ""):
     url = "http://localhost:41170/autoguru/answer"
-    data = {"question": question}
+    data = {"question": question[2:]}
     headers = {"Content-Type": "application/json"}
 
     data = json.dumps(data)
     req = requests.post(url=url, data=data, headers=headers, stream=True)
     response = req.content.decode()
     answer = json.loads(response)['content']
+    confidence = abs(json.loads(response)['confidence'])
+    answer += f'\n\n(Confidence: {confidence})'
     return answer
 
 
