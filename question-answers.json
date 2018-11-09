@@ -20,6 +20,8 @@
 
 
   "400":"**400 (Bad Request)**\n A 400 response indicates that there was a syntax error with your request. If you post your API call URL, Botty McBotface can try to locate syntax errors for you.\n**Common Reasons:\nA provided parameter is in the wrong format (e.g., a string instead of an integer)\nA required parameter was not provided",
+  "400 error":"**400 (Bad Request)**\n A 400 response indicates that there was a syntax error with your request. If you post your API call URL, Botty McBotface can try to locate syntax errors for you.\n**Common Reasons:\nA provided parameter is in the wrong format (e.g., a string instead of an integer)\nA required parameter was not provided",
+  "400 response":"**400 (Bad Request)**\n A 400 response indicates that there was a syntax error with your request. If you post your API call URL, Botty McBotface can try to locate syntax errors for you.\n**Common Reasons:\nA provided parameter is in the wrong format (e.g., a string instead of an integer)\nA required parameter was not provided",
   "why am I getting 400s?":"**400 (Bad Request)**\n A 400 response indicates that there was a syntax error with your request. If you post your API call URL, Botty McBotface can try to locate syntax errors for you.\n**Common Reasons:\nA provided parameter is in the wrong format (e.g., a string instead of an integer)\nA required parameter was not provided",
   "why did I get a bad request error?":"**400 (Bad Request)**\n A 400 response indicates that there was a syntax error with your request. If you post your API call URL, Botty McBotface can try to locate syntax errors for you.\n**Common Reasons:\nA provided parameter is in the wrong format (e.g., a string instead of an integer)\nA required parameter was not provided",
   
