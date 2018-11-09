@@ -131,5 +131,7 @@
   "I'm getting bad request 400 errors all the time can you help?": "Using a Riot API wrapper makes working with the API much easier, and is highly recommended for everyone (especially beginners). If you use a wrapper, you don't need to worry about things like rate limiting or properly formatting requests. You can find a list of wrappers here https://discussion.developer.riotgames.com/articles/61/public-libraries-for-the-riot-games-api.html",
   "I keep getting 400 from the match endpoint what do I do?": "Using a Riot API wrapper makes working with the API much easier, and is highly recommended for everyone (especially beginners). If you use a wrapper, you don't need to worry about things like rate limiting or properly formatting requests. You can find a list of wrappers here https://discussion.developer.riotgames.com/articles/61/public-libraries-for-the-riot-games-api.html",
 
-  "Where can I find client image assets?": "Static image assets can be obtained from DataDragon. Documentation for it can be found here https://developer.riotgames.com/static-data.html"
+  "Where can I find client image assets?": "Static image assets can be obtained from DataDragon. Documentation for it can be found here https://developer.riotgames.com/static-data.html",
+
+  "gozaq": "twitch.tv/gozaq"
 }
