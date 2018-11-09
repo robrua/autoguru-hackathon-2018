@@ -8,11 +8,11 @@ class Storage(object):
             self._data = json.load(in_file)
 
     def _save(self) -> None:
-        with open('data.json') as outfile:
+        with open('storage.json') as outfile:
             json.dump(self._data, outfile)
 
     def _load(self) -> object:
-        with open('data.json') as in_file:
+        with open('storage.json') as in_file:
             return json.load(in_file)
 
     def set(self, key: str, value: Any) -> None:
