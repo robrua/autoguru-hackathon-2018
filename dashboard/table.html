@@ -146,15 +146,53 @@
                                 <p class="category">All unanswered & unresolved questions</p>
                             </div>
                             <div class="content table-responsive table-full-width">
-                                <table class="table table-striped">
-                                    <thead>
-                                    	<th>Question</th>
-                                    	<th>Category</th>
-                                    	<th># of Similar Questions</th>
-                                    </thead>
-                                    <tbody id="unanswered-tbody">
-                                    </tbody>
-                                </table>
+															<table class="table table-striped">
+																	<thead>
+																			<th>ID</th>
+																		<th>Question</th>
+																		<th>Category</th>
+																		<th># of Similar Questions</th>
+																	</thead>
+																	<tbody>
+																			<tr>
+																				<td>1</td>
+																				<td>I'm getting a 404 error. Can someone help?</td>
+																				<td>Match API</td>
+																				<td>3</td>
+																			</tr>
+																			<tr>
+																				<td>2</td>
+																				<td>How do I get the Summoner ID by Account Name?</td>
+																				<td>Summoner API</td>
+																				<td>16</td>
+																			</tr>
+																			<tr>
+																				<td>3</td>
+																				<td>How do I get experts for certain champions?</td>
+																				<td>Champion API</td>
+																				<td>2</td>
+																			</tr>
+																			<tr>
+																				<td>4</td>
+																				<td>Cannot find data about passive skills.</td>
+																				<td>Champion API</td>
+																				<td>1</td>
+																			</tr>
+																			<tr>
+																				<td>5</td>
+																				<td>What does PlayerScore mean?</td>
+																				<td>Match API</td>
+																				<td>3</td>
+																			</tr>
+																			<tr>
+																				<td>6</td>
+																				<td>Static Data 403 Forbidden</td>
+																				<td>Champion API</td>
+																				<td>1</td>
+																			</tr>
+																	<tbody id="unanswered-tbody">
+																	</tbody>
+															</table>
 
                             </div>
                         </div>
@@ -285,18 +323,6 @@
 
 	<!-- Paper Dashboard DEMO methods, don't include it in your project! -->
     <script src="assets/js/demo.js"></script>
-
-    <script>
-    $(document).ready(function() {
-        $.ajax({
-            url: "http://0.0.0.0:41170/autoguru/unanswered"
-        }).then(function(data) {
-            for (const question of JSON.parse(data)) {
-                $('#unanswered-tbody').append("<tr><td>" + question.question + "</td><td>" + question.category + "</td><td>" + question.total_similar + "</td></tr>");
-            }
-        });
-    });
-    </script>
 
 
 </html>
