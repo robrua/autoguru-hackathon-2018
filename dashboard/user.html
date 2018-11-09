@@ -210,6 +210,21 @@
 	<script src="assets/js/paper-dashboard.js"></script>
 
 	<!-- Paper Dashboard DEMO methods, don't include it in your project! -->
-	<script src="assets/js/demo.js"></script>
+    <script src="assets/js/demo.js"></script>
+    
+    <script type="text/javascript">
+    	$(document).ready(function(){
+
+            $.ajax({
+                url: "http://0.0.0.0:41170/autoguru/dashboard"
+            }).then(function(data) {
+                $('#total_questions').text(data.total_questions);
+                $('#answered_questions').text(data.total_answered_questions);
+                $('#unanswered_questions').text(data.total_unanswered_questions);
+                $('#total_users').text(data.total_users);
+            });
+
+    	});
+	</script>
 
 </html>

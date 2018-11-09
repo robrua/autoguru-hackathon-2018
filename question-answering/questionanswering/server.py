@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, List
 import json
 
 from faker import Faker
@@ -7,6 +7,7 @@ import bottle
 import click
 
 from .answers import AnswerDatabase, Answer
+from .storage import Storage
 
 
 _DEFAULT_HOST = "0.0.0.0"
@@ -16,9 +17,18 @@ _DEFAULT_DEBUG = False
 _DEFAULT_DATABASE = "answers.json"
 _DEFAULT_VECTORS = "answer-vectors.npz"
 _DEFAULT_EMBEDDER = "embedder.npz"
+_DEFAULT_STORAGE = "storage.json"
+
+_CONFIDENCE_THRESHOLD = 0
+
+_TOTAL_QUESTIONS_KEY = "total_questions"
+_TOTAL_ANSWERED_QUESTIONS_KEY = "total_answered_questions"
+_TOTAL_UNANSWERED_QUESTIONS_KEY = "total_unanswered_questions"
+_TOTAL_USERS_KEY = "total_users"
+_UNANSWERED_QUESTIONS_KEY = "unanswered_questions"
 
 
-def _initialize_services(application: bottle.Bottle, answer_database: AnswerDatabase) -> None:
+def _initialize_services(application: bottle.Bottle, storage: Storage) -> None:
     @application.hook("after_request")
     def _enable_cors() -> None:
         bottle.response.headers["Access-Control-Allow-Origin"] = "*"
@@ -37,6 +47,9 @@ def _initialize_services(application: bottle.Bottle, answer_database: AnswerData
             question = query["question"]
         except KeyError:
             return bottle.HTTPError(status=400, body="POST request included no \"question\" field!")
+
+        storage.increment_key(_TOTAL_QUESTIONS_KEY)
+        storage.increment_key(_TOTAL_ANSWERED_QUESTIONS_KEY)
 
         fake = Faker()
         return Answer(
@@ -57,7 +70,29 @@ def _initialize_services(application: bottle.Bottle, answer_database: AnswerData
         except KeyError:
             return bottle.HTTPError(status=400, body="POST request included no \"question\" field!")
 
-        return answer_database.get_answer(question).to_serializable()
+        storage.increment_key(_TOTAL_QUESTIONS_KEY)
+        answer = answer_database.get_answer(question)
+
+        if answer.confidence > _CONFIDENCE_THRESHOLD:
+            storage.increment_key(_TOTAL_ANSWERED_QUESTIONS_KEY)
+        else:
+            storage.increment_key(_TOTAL_UNANSWERED_QUESTIONS_KEY)
+
+        return answer.to_serializable()
+
+    @application.get("/autoguru/dashboard")
+    def _dashboard() -> Dict[str, Any]:
+        return {
+            _TOTAL_QUESTIONS_KEY: storage.get(_TOTAL_QUESTIONS_KEY),
+            _TOTAL_ANSWERED_QUESTIONS_KEY: storage.get(_TOTAL_ANSWERED_QUESTIONS_KEY),
+            _TOTAL_UNANSWERED_QUESTIONS_KEY: storage.get(_TOTAL_UNANSWERED_QUESTIONS_KEY),
+            _TOTAL_USERS_KEY: storage.get(_TOTAL_USERS_KEY)
+        }
+
+    @application.get("/autoguru/unanswered")
+    def _unanswered() -> Any:
+        return json.dumps(storage.get(_UNANSWERED_QUESTIONS_KEY))
+
 
 
 @click.command(name="run", help="Run the AutoGuru Question Answering REST services")
@@ -75,10 +110,11 @@ def _run(host: str = _DEFAULT_HOST,
          answers: str = _DEFAULT_DATABASE,
          vectors: str = _DEFAULT_VECTORS,
          debug: bool = _DEFAULT_DEBUG) -> None:
-    answer_database = AnswerDatabase.load(answers_path=answers, vectors_path=vectors, embedder_path=embedder)
+    # answer_database = AnswerDatabase.load(answers_path=answers, vectors_path=vectors, embedder_path=embedder)
+    storage = Storage(filepath=_DEFAULT_STORAGE)
 
     application = bottle.Bottle()
-    _initialize_services(application, answer_database)
+    _initialize_services(application, storage)
 
     application.run(host=host, port=port, server=server, debug=debug)
 
