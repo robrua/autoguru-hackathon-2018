@@ -31,7 +31,7 @@ def main():
     # eembedder model location, change for yourprogram
     embedder = Embedder.load(model)
     
-    with open('E://hackathon//question-answers.json') as f:
+    with open('E://hackathon//final//question-answers.json') as f:
         pracDic = collections.OrderedDict(json.load(f))
     # load json dict    
     embedded = np.zeros((len(pracDic),300))
@@ -52,7 +52,7 @@ def main():
     #pracDic = dict(compress(list(pracDic.items()),list(~embedded.isnull().any(axis=1))))
     #embedded = embedded.loc[~embedded.isnull().any(axis=1),:]
     
-    tsne = TSNE(n_components =2,verbose=0,perplexity=12,n_iter=10000, early_exaggeration =5)
+    tsne = TSNE(n_components =2,verbose=0,perplexity=12,n_iter=10000, early_exaggeration =15)
     tsne_results = np.array(tsne.fit_transform(embedded))
     # creates tsne model and fits our data to it
     finalQuest = pd.DataFrame({'quest':question,'ans':answers,'origVects':np.array(embedded).tolist(),
@@ -61,26 +61,12 @@ def main():
     # this isnt needed i didnt want to mess with finalQuest while debugging
         
     def splitFrame(df):
-        ''' creates a list of dataframes of same size, one dataframe is created for each question
-        each dataframe has null rows for every question besides the i'th quesiton'''
-        count = 1
-        dfList = []
-        tempDf = pd.DataFrame([])
-        tempDf['quest'] = df['quest']
-        tempDf['x'] = df['vectX']
-        tempDf['y'] = df['vectY']
-        tempDf['ans'] = df['ans']
-        tempDf['count'] = pd.DataFrame([0]*int(len(tempDf)))
+        ''' created a list of dataframes with each df having different questions'''
         ansSet = list(set(df['ans']))
-        for x in range(len(set(df['ans']))):
-            storedBool = df['ans'] == ansSet[x]
-            tempDf['count'] = tempDf['count'] + storedBool*count
-            count += 1
-        
-        for x in range(len(set(df['ans']))):
-            manipDf = deepcopy(tempDf)
-            manipDf.loc[manipDf['count']!= x+1,:] = np.NaN
-            dfList.append(manipDf)
+        dfList = []
+        for x in ansSet:
+            manipDf = df.loc[df['ans'] == x,:]
+            dfList.append(manipDf)            
         return(dfList)
     splits = splitFrame(df)
     
@@ -122,14 +108,15 @@ def main():
     #generates a list of colors
     
     # manually selecting colors, this is just for hte demo, comment out this line if using more
-    colors = ['firebrick','royalblue','peru','teal','seagreen','darkmagenta','gold']
+    #colors = ['firebrick','royalblue','peru','teal','seagreen','darkmagenta','gold','black','orange']
     
     for x in range(len(splits)):
-        r = p.scatter('x','y', size=10,source=bk.ColumnDataSource(splits[x]),color=colors[x])
+        r = p.scatter('vectX','vectY', size=10,source=bk.ColumnDataSource(splits[x]),color=colors[x])
         p.add_tools(HoverTool(renderers=[r], tooltips=TOOLTIPS))
         #plots all of the different colored points with their respective hover text
         
     bk.show(p)
+    return (splits,pracDic)
     #shows the plot
 if __name__ == '__main__':
-    main()
+    (splits,pracDic) = main()
